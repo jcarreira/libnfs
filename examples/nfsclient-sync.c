@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
 	struct nfsdirent *nfsdirent;
 	struct statvfs svfs;
 	exports export, tmp;
-	const char *url = NULL;
-	char *server = NULL, *path = NULL, *strp;
+	//const char *url = NULL;
+	char *server = NULL, *path = NULL;
 
 #ifdef WIN32
 	if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
@@ -97,62 +97,27 @@ int main(int argc, char *argv[])
 	aros_init_socket();
 #endif
 
-	url = argv[1];
 
-	if (url == NULL) {
-		fprintf(stderr, "No URL specified.\n");
-		print_usage();
-		exit(0);
-	}
-
-	if (strncmp(url, "nfs://", 6)) {
-		fprintf(stderr, "Invalid URL specified.\n");
-		print_usage();
-		exit(0);
-	}
-
-	server = strdup(url + 6);
-	if (server == NULL) {
-		fprintf(stderr, "Failed to strdup server string\n");
-		exit(10);
-	}
-	if (server[0] == '/' || server[0] == '\0') {
-		fprintf(stderr, "Invalid server string.\n");
-		free(server);
-		exit(10);
-	}
-	strp = strchr(server, '/');
-	if (strp == NULL) {
-		fprintf(stderr, "Invalid URL specified.\n");
-		print_usage();
-		free(server);
-		exit(0);
-	}
-	path = strdup(strp);
-	if (path == NULL) {
-		fprintf(stderr, "Failed to strdup server string\n");
-		free(server);
-		exit(10);
-	}
-	if (path[0] != '/') {
-		fprintf(stderr, "Invalid path.\n");
-		free(server);
-		free(path);
-		exit(10);
-	}
-	*strp = 0;
-	
-	client.server = server;
-	client.export = path;
-	client.is_finished = 0;
-
-
+        puts("nfs_init_context");
 	nfs = nfs_init_context();
 	if (nfs == NULL) {
 		printf("failed to init context\n");
 		goto finished;
 	}
 
+	//url = argv[1];
+        struct nfs_url *url = NULL;
+        url = nfs_parse_url_dir(nfs, argv[argc - 1]);
+        if (url == NULL) {
+            fprintf(stderr, "%s\n", nfs_get_error(nfs));
+            goto finished;
+        }
+
+	client.server = url->server;
+	client.export = url->path;
+	client.is_finished = 0;
+
+        puts("nfs_mount");
 	ret = nfs_mount(nfs, client.server, client.export);
 	if (ret != 0) {
  		printf("Failed to mount nfs share : %s\n", nfs_get_error(nfs));
@@ -160,11 +125,14 @@ int main(int argc, char *argv[])
 	}
 
 
+        puts("nfs_opendir");
 	ret = nfs_opendir(nfs, "/", &nfsdir);
 	if (ret != 0) {
 		printf("Failed to opendir(\"/\") %s\n", nfs_get_error(nfs));
 		exit(10);
 	}
+        
+        puts("nfs_opendir");
 	while((nfsdirent = nfs_readdir(nfs, nfsdir)) != NULL) {
 		char path[1024];
 
