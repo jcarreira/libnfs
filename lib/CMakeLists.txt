@@ -7,7 +7,7 @@ set(SOURCES init.c
             pdu.c
             socket.c)
 
-add_library(nfs ${SOURCES})
+add_library(nfs STATIC ${SOURCES})
 target_link_libraries(nfs PUBLIC ${core_DEPENDS})
 set_target_properties(nfs PROPERTIES
                           VERSION ${PROJECT_VERSION}
