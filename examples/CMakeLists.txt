@@ -8,6 +8,7 @@ list(APPEND CORE_LIBRARIES ${POPT_LIBRARY})
 set(SOURCES nfsclient-async
             nfsclient-raw
             nfsclient-sync
+            nfsclient-write
             nfsclient-bcast
             nfsclient-listservers
             nfs-io
