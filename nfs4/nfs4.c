@@ -184,6 +184,9 @@ rpc_nfs4_null_async(struct rpc_context *rpc, rpc_cb cb, void *private_data)
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("rpc_nfs4_null_async allocate_pdu");
+#endif
 	pdu = rpc_allocate_pdu(rpc, NFS4_PROGRAM, NFS_V4, NFSPROC4_NULL, cb,
                                private_data, (zdrproc_t)zdr_void, 0);
 	if (pdu == NULL) {
@@ -207,22 +210,34 @@ rpc_nfs4_compound_async(struct rpc_context *rpc, rpc_cb cb,
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("rpc_nfs4_compound_async allocate_pdu");
+#endif
 	pdu = rpc_allocate_pdu(rpc, NFS4_PROGRAM, NFS_V4, NFSPROC4_COMPOUND,
                                cb, private_data, (zdrproc_t)zdr_COMPOUND4res,
                                sizeof(COMPOUND4res));
 	if (pdu == NULL) {
+#ifdef _JOAO_DEBUG_
+          puts("pdu == NULL");
+#endif
 		rpc_set_error(rpc, "Out of memory. Failed to allocate pdu for "
                               "NFS4/COMPOUND call");
 		return -1;
 	}
 
 	if (zdr_COMPOUND4args(&pdu->zdr,  args) == 0) {
+#ifdef _JOAO_DEBUG_
+          puts("compound error");
+#endif
 		rpc_set_error(rpc, "ZDR error: Failed to encode COMPOUND4args");
 		rpc_free_pdu(rpc, pdu);
 		return -2;
 	}
 
 	if (rpc_queue_pdu(rpc, pdu) != 0) {
+#ifdef _JOAO_DEBUG_
+          puts("queue_pud error");
+#endif
 		rpc_set_error(rpc, "Out of memory. Failed to queue pdu for "
                               "NFS4/COMPOUND4 call");
 		return -3;

@@ -202,6 +202,8 @@ nfs4_resolve_path(struct nfs_context *nfs, const char *path)
          * Relateive paths have cwd prepended to them and then become
          * absolute paths too.
          */
+
+        //printf("nfs4_resolve_path path: %s\n", path);
         if (path[0] == '/') {
                 new_path = strdup(path);
         } else {
@@ -222,6 +224,8 @@ nfs4_resolve_path(struct nfs_context *nfs, const char *path)
                 free(new_path);
                 return NULL;
         }
+        
+        //printf("nfs4_resolve_path NEW path: %s\n", new_path);
 
         return new_path;
 }
@@ -294,6 +298,7 @@ init_cb_data_split_path(struct nfs_context *nfs, const char *orig_path)
 {
         struct nfs4_cb_data *data;
 
+        printf("init_cb_data_split_path orig_path: %s\n", orig_path);
         data = init_cb_data_full_path(nfs, orig_path);
         if (data == NULL) {
                 return NULL;
@@ -1371,6 +1376,7 @@ nfs4_lookup_path_async(struct nfs_context *nfs,
         char *path;
         int i, num_op;
 
+        printf("nfs3_lookuppath_async path: %s\n", data->path);
         path = nfs4_resolve_path(nfs, data->path);
         if (path == NULL) {
                 return -1;
@@ -1583,6 +1589,7 @@ int
 nfs4_mount_async(struct nfs_context *nfs, const char *server,
                  const char *export, nfs_cb cb, void *private_data)
 {
+  printf("nfs4_mount_async server: %s export: %s\n", server, export);
         struct nfs4_cb_data *data;
         char *new_server, *new_export;
         int port;
@@ -2749,6 +2756,9 @@ nfs4_pwrite_async_internal(struct nfs_context *nfs, struct nfsfh *nfsfh,
 
         data = malloc(sizeof(*data));
         if (data == NULL) {
+#ifdef _JOAO_DEBUG_
+          puts("failed to allocate memory");
+#endif
                 nfs_set_error(nfs, "Out of memory. Failed to allocate "
                               "cb data");
                 return -1;
@@ -2775,6 +2785,9 @@ nfs4_pwrite_async_internal(struct nfs_context *nfs, struct nfsfh *nfsfh,
 
         if (rpc_nfs4_compound_async(nfs->rpc, nfs4_pwrite_cb, &args,
                                     data) != 0) {
+#ifdef _JOAO_DEBUG_
+          puts("rpc_nfs4_compound_async fail");
+#endif
                 free_nfs4_cb_data(data);
                 return -1;
         }

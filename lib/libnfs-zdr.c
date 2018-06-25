@@ -161,14 +161,25 @@ bool_t libnfs_zdr_int64_t(ZDR *zdrs, int64_t *i)
 
 bool_t libnfs_zdr_bytes(ZDR *zdrs, char **bufp, uint32_t *size, uint32_t maxsize)
 {
+#ifdef _JOAO_DEBUG_
+  puts("libnfs_zdr_bytes");
+#endif
         uint32_t zero = 0;
         int pad;
 
 	if (!libnfs_zdr_u_int(zdrs, size)) {
+#ifdef _JOAO_DEBUG_
+          puts("libnfs_zdr_bytes1");
+#endif
 		return FALSE;
 	}
 
 	if (zdrs->pos + (int)*size > zdrs->size) {
+#ifdef _JOAO_DEBUG_
+          printf("zdr->pos: %d *size:%d zdrs->size: %d\n",
+              zdrs->pos, (int)*size, zdrs->size);
+          puts("libnfs_zdr_bytes2");
+#endif
 		return FALSE;
 	}
 
@@ -195,6 +206,9 @@ bool_t libnfs_zdr_bytes(ZDR *zdrs, char **bufp, uint32_t *size, uint32_t maxsize
 		return TRUE;
 	}
 
+#ifdef _JOAO_DEBUG_
+          puts("libnfs_zdr_bytes3");
+#endif
 	return FALSE;
 }
 
@@ -319,6 +333,9 @@ bool_t libnfs_zdr_array(ZDR *zdrs, char **arrp, uint32_t *size, uint32_t maxsize
 	int  i;
 
 	if (!libnfs_zdr_u_int(zdrs, size)) {
+#ifdef _JOAO_DEBUG_
+          puts("libnfs_zdr_u_int failed");
+#endif
 		return FALSE;
 	}
 
@@ -332,6 +349,9 @@ bool_t libnfs_zdr_array(ZDR *zdrs, char **arrp, uint32_t *size, uint32_t maxsize
 
 	for (i = 0; i < (int)*size; i++) {
 		if (!proc(zdrs, *arrp + i * elsize)) {
+#ifdef _JOAO_DEBUG_
+                  puts("proc zdrs failed");
+#endif
 			return FALSE;
 		}
 	}
@@ -489,11 +509,17 @@ static bool_t libnfs_rpc_msg(struct rpc_context *rpc, ZDR *zdrs, struct rpc_msg 
 	int ret;
 
 	if (!libnfs_zdr_u_int(zdrs, &msg->xid)) {
+#ifdef _JOAO_DEBUG_
+          puts("libnfs_zdr_u_int failed");
+#endif
 		rpc_set_error(rpc, "libnfs_rpc_msg failed to decode XID");
 		return FALSE;
 	}
 
 	if (!libnfs_zdr_u_int(zdrs, &msg->direction)) {
+#ifdef _JOAO_DEBUG_
+          puts("libnfs_zdr_u_int2 failed");
+#endif
 		rpc_set_error(rpc, "libnfs_rpc_msg failed to decode DIRECTION");
 		return FALSE;
 	}
@@ -502,6 +528,9 @@ static bool_t libnfs_rpc_msg(struct rpc_context *rpc, ZDR *zdrs, struct rpc_msg 
 	case CALL:
 		ret = libnfs_rpc_call_body(rpc, zdrs, &msg->body.cbody);
 		if (!ret) { 
+#ifdef _JOAO_DEBUG_
+                  puts("libnfs_rpc_call_body failed");
+#endif
 			rpc_set_error(rpc, "libnfs_rpc_msg failed to encode "
 				"CALL, ret=%d: %s", ret, rpc_get_error(rpc));
 		}
@@ -509,11 +538,17 @@ static bool_t libnfs_rpc_msg(struct rpc_context *rpc, ZDR *zdrs, struct rpc_msg 
 	case REPLY:
 		ret = libnfs_rpc_reply_body(rpc, zdrs, &msg->body.rbody);
 		if (!ret) { 
+#ifdef _JOAO_DEBUG_
+                  puts("libnfs_rpc_reply_body failed");
+#endif
 			rpc_set_error(rpc, "libnfs_rpc_msg failed to decode "
 				"REPLY, ret=%d: %s", ret, rpc_get_error(rpc));
 		}
 		return ret;
 	default:
+#ifdef _JOAO_DEBUG_
+                  puts("libnfs_rpc_msg default failed");
+#endif
 		rpc_set_error(rpc, "libnfs_rpc_msg failed to decode. "
 			"Neither CALL not REPLY");
 		return FALSE;

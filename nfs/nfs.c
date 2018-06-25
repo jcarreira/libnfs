@@ -312,6 +312,9 @@ int rpc_nfs3_write_async(struct rpc_context *rpc, rpc_cb cb, struct WRITE3args *
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("calling pdu2");
+#endif
 	pdu = rpc_allocate_pdu2(rpc, NFS_PROGRAM, NFS_V3, NFS3_WRITE, cb, private_data, (zdrproc_t)zdr_WRITE3res, sizeof(WRITE3res), args->count);
 	if (pdu == NULL) {
 		rpc_set_error(rpc, "Out of memory. Failed to allocate pdu for NFS3/WRITE call");
@@ -964,6 +967,9 @@ int rpc_nfs2_lookup_async(struct rpc_context *rpc, rpc_cb cb, struct LOOKUP2args
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("calling pdu2");
+#endif
 	pdu = rpc_allocate_pdu(rpc, NFS_PROGRAM, NFS_V2, NFS2_LOOKUP, cb, private_data, (zdrproc_t)zdr_LOOKUP2res, sizeof(LOOKUP2res));
 	if (pdu == NULL) {
 		rpc_set_error(rpc, "Out of memory. Failed to allocate pdu for NFS2/LOOKUP call");
@@ -1036,6 +1042,9 @@ int rpc_nfs2_write_async(struct rpc_context *rpc, rpc_cb cb, struct WRITE2args *
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("calling pdu2");
+#endif
 	pdu = rpc_allocate_pdu2(rpc, NFS_PROGRAM, NFS_V2, NFS2_WRITE, cb, private_data, (zdrproc_t)zdr_WRITE2res, sizeof(WRITE2res), args->totalcount);
 	if (pdu == NULL) {
 		rpc_set_error(rpc, "Out of memory. Failed to allocate pdu for NFS2/WRITE call");
