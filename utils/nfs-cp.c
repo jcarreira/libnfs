@@ -121,7 +121,11 @@ file_pread(struct file_context *fc, char *buf, size_t count, off_t off)
 		lseek(fc->fd, off, SEEK_SET);
 		return read(fc->fd, buf, count);
 	} else {
-		return nfs_pread(fc->nfs, fc->nfsfh, off, count, buf);
+		int ret = nfs_pread(fc->nfs, fc->nfsfh, off, count, buf);
+#ifdef _JOAO_DEBUG_
+                printf("nfs_pread off: %ld count: %lu ret: %d\n", off, count, ret);
+#endif
+                return ret;
 	}
 }
 
@@ -132,7 +136,14 @@ file_pwrite(struct file_context *fc, char *buf, size_t count, off_t off)
 		lseek(fc->fd, off, SEEK_SET);
 		return write(fc->fd, buf, count);
 	} else {
-		return nfs_pwrite(fc->nfs, fc->nfsfh, off, count, buf);
+#ifdef _JOAO_DEBUG_
+                printf("calling nfs_pwrite\n");
+#endif
+		int ret = nfs_pwrite(fc->nfs, fc->nfsfh, off, count, buf);
+#ifdef _JOAO_DEBUG_
+                printf("nfs_pwrite off: %ld count: %lu ret: %d\n", off, count, ret);
+#endif
+                return ret;
 	}
 }
 
@@ -178,7 +189,10 @@ open_file(const char *url, int flags)
 		free_file_context(file_context);
 		return NULL;
 	}
-
+#ifdef _JOAO_DEBUG_
+        printf("nfs_mount ->url->server: %s ->url->path: %s\n",
+            file_context->url->server, file_context->url->path);
+#endif
 	if (nfs_mount(file_context->nfs, file_context->url->server,
 				file_context->url->path) != 0) {
 		fprintf(stderr, "Failed to mount nfs share : %s\n",

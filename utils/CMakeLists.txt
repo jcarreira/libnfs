@@ -13,4 +13,4 @@ foreach(TARGET ${SOURCES})
   add_dependencies(${TARGET} nfs)
 endforeach()
 
-add_definitions("-D_U_=__attribute__((unused))")
+#add_definitions("-D_U_=__attribute__((unused))")

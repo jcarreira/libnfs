@@ -12,7 +12,7 @@ set(INSTALL_MAN_DIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Installation
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/libnfs" CACHE PATH "Installation directory for cmake (.cmake) files")
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+#option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_TESTS "Build and run test programs" OFF)
 option(ENABLE_DOCUMENTATION "Build Documentation" OFF)
 option(ENABLE_UTILS "Build util programs" OFF)
@@ -48,18 +48,18 @@ if(ENABLE_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
-if(ENABLE_EXAMPLES)
-  add_subdirectory(examples)
-endif()
+#if(ENABLE_EXAMPLES)
+add_subdirectory(examples)
+  #endif()
 
 if(ENABLE_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
 
-if(ENABLE_UTILS)
-  add_subdirectory(utils)
-endif()
+#if(ENABLE_UTILS)
+add_subdirectory(utils)
+  #endif()
 
 add_subdirectory(mount)
 add_subdirectory(nfs)

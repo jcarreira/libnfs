@@ -605,6 +605,9 @@ nfs_pwrite(struct nfs_context *nfs, struct nfsfh *nfsfh, uint64_t offset,
 
 	if (nfs_pwrite_async(nfs, nfsfh, offset, count, buf, pwrite_cb,
                              &cb_data) != 0) {
+#ifdef _JOAO_DEBUG_
+                puts("pwrite error1");
+#endif
 		nfs_set_error(nfs, "nfs_pwrite_async failed. %s",
                               nfs_get_error(nfs));
 		return -1;
@@ -612,6 +615,9 @@ nfs_pwrite(struct nfs_context *nfs, struct nfsfh *nfsfh, uint64_t offset,
 
 	wait_for_nfs_reply(nfs, &cb_data);
 
+#ifdef _JOAO_DEBUG_
+        printf("returning from nfs_pwrite ret: %d\n", cb_data.status);
+#endif
 	return cb_data.status;
 }
 

@@ -300,6 +300,9 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 	struct nfs_url *urls;
 	char *strp, *flagsp, *strp2;
 
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url url: %s\n", url);
+#endif
 	if (strncmp(url, "nfs://", 6)) {
 		nfs_set_error(nfs, "Invalid URL specified");
 		return NULL;
@@ -313,6 +316,9 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 
 	memset(urls, 0x00, sizeof(struct nfs_url));
 	urls->server = strdup(url + 6);
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->server: %s\n", urls->server);
+#endif
 	if (urls->server == NULL) {
 		nfs_destroy_url(urls);
 		nfs_set_error(nfs, "Out of memory");
@@ -331,6 +337,9 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 	}
 
 	strp = strchr(urls->server, '/');
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url strp: %s\n", strp);
+#endif
 	if (strp == NULL) {
 		if (incomplete) {
 			flagsp = strchr(urls->server, '?');
@@ -342,12 +351,18 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 	}
 
 	urls->path = strdup(strp);
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 	if (urls->path == NULL) {
 		nfs_destroy_url(urls);
 		nfs_set_error(nfs, "Out of memory");
 		return NULL;
 	}
 	*strp = 0;
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 
 	if (dir) {
 		flagsp = strchr(urls->path, '?');
@@ -355,6 +370,9 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 	}
 
 	strp = strrchr(urls->path, '/');
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url strp: %s\n", strp);
+#endif
 	if (strp == NULL) {
 		if (incomplete) {
 			flagsp = strchr(urls->path, '?');
@@ -364,14 +382,26 @@ nfs_parse_url(struct nfs_context *nfs, const char *url, int dir, int incomplete)
 		nfs_set_error(nfs, "Incomplete or invalid URL specified.");
 		return NULL;
 	}
+#ifdef _JOAO_DEBUG_
+        printf("3nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 	urls->file = strdup(strp);
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->file: %s\n", urls->file);
+#endif
 	if (urls->path == NULL) {
 		nfs_destroy_url(urls);
 		nfs_set_error(nfs, "Out of memory");
 		return NULL;
 	}
+#ifdef _JOAO_DEBUG_
+        printf("4nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 	*strp = 0;
 	flagsp = strchr(urls->file, '?');
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 
 flags:
 	if (flagsp) {
@@ -402,11 +432,18 @@ flags:
 			nfs_set_context_args(nfs, strp, strp2);
 		}
 	}
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->path: %s\n", urls->path);
+#endif
+
 
 	if (urls->server && strlen(urls->server) <= 1) {
 		free(urls->server);
 		urls->server = NULL;
 	}
+#ifdef _JOAO_DEBUG_
+        printf("nfs_parse_url urls->path: %s\n", urls->path);
+#endif
 
 	return urls;
 }
@@ -1098,14 +1135,22 @@ nfs_pwrite_async(struct nfs_context *nfs, struct nfsfh *nfsfh, uint64_t offset,
                  uint64_t count, const void *buf, nfs_cb cb, void *private_data)
 {
 	switch (nfs->version) {
-        case NFS_V3:
+        case NFS_V3: {
+#ifdef _JOAO_DEBUG_
+                       puts("nfs v3");
+#endif
                 return nfs3_pwrite_async_internal(nfs, nfsfh, offset,
                                                   (size_t)count, buf,
                                                   cb, private_data, 0);
-        case NFS_V4:
+                }
+        case NFS_V4: {
+#ifdef _JOAO_DEBUG_
+                       puts("nfs v4");
+#endif
                 return nfs4_pwrite_async_internal(nfs, nfsfh, offset,
                                                   (size_t)count, buf,
                                                   cb, private_data, 0);
+                     }
         default:
                 nfs_set_error(nfs, "%s does not support NFSv%d.",
                               __FUNCTION__, nfs->version);
@@ -1970,6 +2015,9 @@ rpc_null_async(struct rpc_context *rpc, int program, int version, rpc_cb cb,
 {
 	struct rpc_pdu *pdu;
 
+#ifdef _JOAO_DEBUG_
+        puts("rcp_allocate_pdu null");
+#endif
 	pdu = rpc_allocate_pdu(rpc, program, version, 0, cb, private_data,
                                (zdrproc_t)zdr_void, 0);
 	if (pdu == NULL) {

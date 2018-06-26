@@ -91,6 +91,9 @@ static struct rpc_pdu *rpc_allocate_reply_pdu(struct rpc_context *rpc,
                                               struct rpc_msg *res,
                                               size_t alloc_hint)
 {
+#ifdef _JOAO_DEBUG_
+  puts("rpc_allocate_reply_pdu");
+#endif
 	struct rpc_pdu *pdu;
 
 	assert(rpc->magic == RPC_CONTEXT_MAGIC);
@@ -134,6 +137,7 @@ static struct rpc_pdu *rpc_allocate_reply_pdu(struct rpc_context *rpc,
 
 struct rpc_pdu *rpc_allocate_pdu2(struct rpc_context *rpc, int program, int version, int procedure, rpc_cb cb, void *private_data, zdrproc_t zdr_decode_fn, int zdr_decode_bufsize, size_t alloc_hint)
 {
+  printf("rpc_allocate_pdu2 alloc_hint: %lu\n", alloc_hint);
 	struct rpc_pdu *pdu;
 	struct rpc_msg msg;
 	int pdu_size;
@@ -194,6 +198,9 @@ struct rpc_pdu *rpc_allocate_pdu2(struct rpc_context *rpc, int program, int vers
 
 struct rpc_pdu *rpc_allocate_pdu(struct rpc_context *rpc, int program, int version, int procedure, rpc_cb cb, void *private_data, zdrproc_t zdr_decode_fn, int zdr_decode_bufsize)
 {
+#ifdef _JOAO_DEBUG_
+  puts("rpc_allocate_pdu");
+#endif
 	return rpc_allocate_pdu2(rpc, program, version, procedure, cb, private_data, zdr_decode_fn, zdr_decode_bufsize, 0);
 }
 
@@ -246,6 +253,9 @@ int rpc_queue_pdu(struct rpc_context *rpc, struct rpc_pdu *pdu)
 		unsigned int hash;
 
 // XXX add a rpc->udp_dest_sock_size  and get rid of sys/socket.h and netinet/in.h
+#ifdef _JOAO_DEBUG_
+                puts("Sending UDP PDU");
+#endif
 		if (sendto(rpc->fd, pdu->zdr.buf, size, MSG_DONTWAIT,
                            (struct sockaddr *)&rpc->udp_dest,
                            sizeof(rpc->udp_dest)) < 0) {
@@ -467,6 +477,9 @@ static int rpc_process_call(struct rpc_context *rpc, ZDR *zdr)
 
 int rpc_process_pdu(struct rpc_context *rpc, char *buf, int size)
 {
+#ifdef _JOAO_DEBUG_
+  puts("rpc_process_pdu");
+#endif
 	struct rpc_pdu *pdu, *prev_pdu;
 	struct rpc_queue *q;
 	ZDR zdr;

@@ -2462,16 +2462,35 @@ zdr_stable_how4 (ZDR *zdrs, stable_how4 *objp)
 uint32_t
 zdr_WRITE4args (ZDR *zdrs, WRITE4args *objp)
 {
-	
+#ifdef _JOAO_DEBUG_
+  puts("zdr_WRITE4args");	
+#endif
 
-	 if (!zdr_stateid4 (zdrs, &objp->stateid))
+	 if (!zdr_stateid4 (zdrs, &objp->stateid)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_stateid4");
+#endif
 		 return FALSE;
-	 if (!zdr_offset4 (zdrs, &objp->offset))
+         }
+	 if (!zdr_offset4 (zdrs, &objp->offset)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_offset4");
+#endif
 		 return FALSE;
-	 if (!zdr_stable_how4 (zdrs, &objp->stable))
+         }
+	 if (!zdr_stable_how4 (zdrs, &objp->stable)){
+#ifdef _JOAO_DEBUG_
+           puts("zdr_stable_how4");
+#endif
 		 return FALSE;
-	 if (!zdr_bytes (zdrs, (char **)&objp->data.data_val, (u_int *) &objp->data.data_len, ~0))
 		 return FALSE;
+         }
+	 if (!zdr_bytes (zdrs, (char **)&objp->data.data_val, (u_int *) &objp->data.data_len, ~0)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_bytes failed");
+#endif
+		 return FALSE;
+         }
 	return TRUE;
 }
 
@@ -2550,10 +2569,19 @@ zdr_nfs_opnum4 (ZDR *zdrs, nfs_opnum4 *objp)
 uint32_t
 zdr_nfs_argop4 (ZDR *zdrs, nfs_argop4 *objp)
 {
-	
+#ifdef _JOAO_DEBUG_
+      puts("zdr_nfs_argop4");
+#endif
 
-	 if (!zdr_nfs_opnum4 (zdrs, &objp->argop))
+	 if (!zdr_nfs_opnum4 (zdrs, &objp->argop)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_nfs_argop4 1");
+#endif
 		 return FALSE;
+         }
+#ifdef _JOAO_DEBUG_
+         printf("zdr_nfs_argop4 objp->argop: %d\n", objp->argop);
+#endif
 	switch (objp->argop) {
 	case OP_ACCESS:
 		 if (!zdr_ACCESS4args (zdrs, &objp->nfs_argop4_u.opaccess))
@@ -2628,6 +2656,9 @@ zdr_nfs_argop4 (ZDR *zdrs, nfs_argop4 *objp)
 			 return FALSE;
 		break;
 	case OP_PUTFH:
+#ifdef _JOAO_DEBUG_
+                puts("OP_PUTFH");
+#endif
 		 if (!zdr_PUTFH4args (zdrs, &objp->nfs_argop4_u.opputfh))
 			 return FALSE;
 		break;
@@ -2860,13 +2891,25 @@ zdr_COMPOUND4args (ZDR *zdrs, COMPOUND4args *objp)
 {
 	
 
-	 if (!zdr_utf8str_cs (zdrs, &objp->tag))
+	 if (!zdr_utf8str_cs (zdrs, &objp->tag)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_utf8str_cs failed");
+#endif
 		 return FALSE;
-	 if (!zdr_uint32_t (zdrs, &objp->minorversion))
+         }
+	 if (!zdr_uint32_t (zdrs, &objp->minorversion)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_uint32_t failed");
+#endif
 		 return FALSE;
+         }
 	 if (!zdr_array (zdrs, (char **)&objp->argarray.argarray_val, (u_int *) &objp->argarray.argarray_len, ~0,
-		sizeof (nfs_argop4), (zdrproc_t) zdr_nfs_argop4))
+		sizeof (nfs_argop4), (zdrproc_t) zdr_nfs_argop4)) {
+#ifdef _JOAO_DEBUG_
+           puts("zdr_array failed");
+#endif
 		 return FALSE;
+         }
 	return TRUE;
 }
 

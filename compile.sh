@@ -1,0 +1,1 @@
+gcc -D_U_="__attribute__((unused))"  -DHAVE_CONFIG_H -static  -I. -Infs -Iinclude/  -Iinclude/nfsc/ -Imount examples/nfsclient-write.c lib/libnfs-sync.c nfs4/nfs4.c nfs/nfs.c nfs/libnfs-raw-nfs.c mount/mount.c  mount/libnfs-raw-mount.c nfs4/libnfs-raw-nfs4.c portmap/portmap.c portmap/libnfs-raw-portmap.c  -L/home/ec2-user/joao/libnfs/lib/ -lnfs -o nfsclient-write

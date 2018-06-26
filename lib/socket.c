@@ -220,6 +220,11 @@ rpc_write_to_socket(struct rpc_context *rpc)
 
 		total = pdu->outdata.size;
 
+#ifdef _JOAO_DEBUG_
+                if (pdu->written == 0) {
+                  printf("Sending PDU with size: %lu\n", total);
+                }
+#endif
 		count = send(rpc->fd, pdu->outdata.data + pdu->written,
                              (int)(total - pdu->written), MSG_NOSIGNAL);
 		if (count == -1) {

@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
 	}
 
 
+#if 0
         puts("nfs_opendir");
 	ret = nfs_opendir(nfs, "/", &nfsdir);
 	if (ret != 0) {
@@ -186,8 +187,60 @@ int main(int argc, char *argv[])
 
 		printf(" %s\n", nfsdirent->name);
 	}
-	nfs_closedir(nfs, nfsdir);
+#endif
 
+        // test writing into a file
+        puts("nfs_open");
+        struct nfsfh* t;
+        int ret2 = nfs_open(nfs, "/test2", O_CREAT | O_RDWR, &t);
+        printf("ret2: %d\n", ret2);
+
+        ret2 = nfs_pwrite(nfs, t, 100, 200, "qwe");
+        printf("ret2: %d\n", ret2);
+
+        //ret2 = nfs_fcntl(nfs, t, NFS4_F_LOCK, 1);
+        //printf("NFS4_F_LOCK ret2: %d\n", ret2);
+        //
+        //ret2 = nfs_fcntl(nfs, t, NFS4_F_ULOCK, 1);
+        //printf("NFS4_F_ULOCK ret2: %d\n", ret2);
+
+
+
+
+
+
+        // this uses fcntl which doesn't seem to support unlock
+#if 0
+        struct nfs4_flock fl;
+        fl.l_whence = SEEK_SET;
+        fl.l_type = F_RDLCK;
+        fl.l_pid = 9999; // No where to be found in the code so assume is not importart
+        fl.l_start = 0;
+        fl.l_len = 1;
+        ret2 = nfs_fcntl(nfs, t, NFS4_F_SETLK, &fl);
+        printf("lock ret2: %d\n", ret2);
+
+        // release the lock, make the next lock op work
+        fl.l_whence = SEEK_SET;
+        fl.l_type = F_UNLCK;
+        fl.l_pid = 9999; // No where to be found in the code so assume is not importart
+        fl.l_start = 0;
+        fl.l_len = 1;
+        ret2 = nfs_fcntl(nfs, t, NFS4_F_SETLK, &fl);
+        printf("unlock ret2: %d\n", ret2);
+
+       
+        // do a write lock, should fail 
+        fl.l_whence = SEEK_SET;
+        fl.l_type = F_WRLCK;
+        fl.l_pid = 9999; // No where to be found in the code so assume is not importart
+        fl.l_start = 0;
+        fl.l_len = 1;
+        ret2 = nfs_fcntl(nfs, t, NFS4_F_SETLK, &fl);
+        printf("lock ret2: %d\n", ret2);
+#endif
+
+	//nfs_closedir(nfs, nfsdir);
 
 finished:
 	free(server);

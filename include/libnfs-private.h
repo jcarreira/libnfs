@@ -94,7 +94,11 @@ struct rpc_queue {
 #define NFS_RA_TIMEOUT 5
 #define NFS_MAX_XFER_SIZE (1024 * 1024)
 #define ZDR_ENCODE_OVERHEAD 1024
-#define ZDR_ENCODEBUF_MINSIZE 4096
+
+// XXX joao: this value needs to be made bigger
+// to allow for bigger writes to Amazon EFS
+#define ZDR_ENCODEBUF_MINSIZE (1024*1024)
+//#define ZDR_ENCODEBUF_MINSIZE (4096)
 
 struct rpc_endpoint {
         struct rpc_endpoint *next;
